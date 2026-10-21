@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>파주출판단지 탐방 코스 | K-뉴딜 아카데미 THC 대전</title>
+<title>파주출판단지 탐방 | K-뉴딜 아카데미 THC 대전</title>
 <meta name="description" content="10월 23일 기업탐방 자유시간 15:30–17:00, 파주출판단지 순환 코스와 인증샷 스탬프 투어">
-<meta property="og:title" content="파주출판단지 탐방 코스 · 스탬프 투어">
+<meta property="og:title" content="파주출판단지 탐방 · 스탬프 투어">
 <meta property="og:description" content="장소를 눌러 길찾기, 인증샷 올리고 스탬프 모으기. 최소 1개 필수, 5개부터 우수 활동 상품!">
 <meta property="og:image" content="https://lumieshop.github.io/THC/course.png">
 <meta name="theme-color" content="#EEF0E8">
@@ -114,6 +114,20 @@ h2{font:700 27px/1.25 var(--serif)}
 .day li::before{content:"";position:absolute;left:-23px;top:15px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ink)}
 .day li.now::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 5px rgba(200,16,46,.18)}
 .day li.now b{color:var(--red)}
+.menu-btn{display:flex;width:fit-content;align-items:center;margin-top:8px;min-height:36px;padding:4px 14px;border:1.5px solid var(--ink);border-radius:18px;font:700 14px var(--sans);background:#fff}
+dialog.mini{position:fixed;inset:0;width:min(340px,calc(100% - 40px));height:fit-content;margin:auto}
+.minibox{position:relative;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:22px 20px 18px;animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:.4}}
+.minibox h3{font:700 22px var(--serif);padding-right:36px}
+.minibox .x{top:6px;right:6px}
+.mplace{font-size:14px;color:var(--ink-soft)}
+.minibox ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+.minibox li{padding:9px 0;border-bottom:1px solid var(--line);font-size:16px}
+.minibox img{display:block;width:100%;margin-top:12px;border-radius:8px}
+.minibox img[hidden],.minibox ul[hidden]{display:none}
+.howto{margin-top:12px;padding:12px 14px;border-radius:8px;background:var(--paper)}
+.howto p{font-weight:700;font-size:15px}
+.howto ol{margin:6px 0 0 20px;font-size:15px;line-height:1.7}
 .nowtag{font-style:normal;font:700 12px var(--sans);color:#fff;background:var(--red);border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:1px}
 .day time{font-weight:700;color:var(--brass);font-size:14px}
 .day b{display:block;font:700 18px/1.3 var(--serif)}
@@ -167,7 +181,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 <div class="wrap">
 <header>
   <p class="kicker">K-뉴딜 아카데미 THC 대전 기업탐방, 10월 23일(금)</p>
-  <h1>파주출판단지 탐방 코스</h1>
+  <h1>파주출판단지 탐방</h1>
   <p class="lead">자유시간 <b>15:30 – 17:00</b>. 출판단지를 자유롭게 걸으며 출판사 건물에 담긴 저마다의 색깔을 느껴봐요. 들어갈 수 있는 건물은 안에도 들러보세요.</p>
   <dl class="facts">
     <div><dt>집합</dt><dd>16:50 지혜의숲 앞</dd></div>
@@ -194,7 +208,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 
 <div class="panel" id="p-course" role="tabpanel" aria-labelledby="t-course" hidden>
 <section aria-labelledby="h-map">
-  <h2 id="h-map">코스 지도</h2>
+  <h2 id="h-map">탐방 지도</h2>
   <p class="hint">번호를 누르면 주소, 길찾기, 장소 소개가 열려요.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1200" class="routemap" role="img" aria-label="파주출판단지 자유시간 순환 코스 지도">
 <defs><pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.4" fill="#1D2B53" opacity=".13"/></pattern></defs>
@@ -369,7 +383,14 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
     <div class="actions">
       <button class="btn ink" id="makeCard">인증 카드 만들기</button>
     </div>
-    <p class="hint" style="margin-top:8px">인증 카드를 단톡방에 올려주세요.</p>
+    <div class="howto">
+      <p>인증 카드는 이렇게 올려주세요</p>
+      <ol>
+        <li><b>인증 카드 만들기</b> 버튼 누르기</li>
+        <li>열린 카드에서 <b>저장하기</b> 누르기 (또는 이미지를 길게 눌러 저장)</li>
+        <li>저장한 이미지를 <b>단톡방에 올리기</b></li>
+      </ol>
+    </div>
     <button class="btn quiet" id="reset">스탬프 모두 지우기</button>
   </div>
 </section>
@@ -405,6 +426,15 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
     <input type="file" id="cam" accept="image/*" capture="environment" hidden>
   </div>
 </div></div></dialog>
+
+<dialog id="menuDlg" class="mini" aria-labelledby="mTitle"><div class="minibox">
+  <button class="x" data-close aria-label="닫기">×</button>
+  <h3 id="mTitle"></h3>
+  <p class="mplace" id="mPlace"></p>
+  <ul id="mList"></ul>
+  <img id="mImg" alt="점심 메뉴" hidden>
+  <button class="btn ink" data-close style="width:100%;margin-top:14px">닫기</button>
+</div></dialog>
 
 <dialog id="cardDlg" class="card-modal" aria-label="인증 카드"><div class="sheet"><div class="wrap">
   <div class="grab"></div>
@@ -546,13 +576,15 @@ const PLACES = [
   "mission": "간판 또는 건물 전경이 보이게"
  }
 ];
+/* 점심 메뉴: items에 메뉴를 적거나 img에 사진 파일 이름을 넣으면 '메뉴 보기' 버튼이 생겨요 */
+const LUNCH = { title: "오늘의 점심", place: "웅진씽크빅 구내식당", items: [], img: "" };
 const DAY = [
   ["08:00","대전역 동광장 출발","08:00 QR 입실 후 버스로 이동"],
   ["11:00","웅진씽크빅 역사관","역사관 투어"],
-  ["12:00","점심식사","웅진씽크빅 구내식당, 점심 제공"],
+  ["12:00","점심식사","웅진씽크빅 구내식당, 점심 제공","lunch"],
   ["13:00","편집자 특강","웅진씽크빅 세미나실1, 편집3팀 정다이 팀장"],
   ["14:00","활판인쇄박물관","14:30 문선 책갈피 만들기, 박물관 투어"],
-  ["15:30","출판단지 자유시간","이 페이지의 탐방 코스와 스탬프 투어"],
+  ["15:30","출판단지 자유시간","출판사 건물을 탐방하며 인증샷 스탬프 모으기 (최소 1개 필수)"],
   ["16:50","지혜의숲 앞 집합","자유시간 마무리, 버스 탑승 준비"],
   ["17:00","대전으로 출발","17:00 퇴실 QR 후 버스로 이동, 20:00 도착 예정"]
 ];
@@ -619,7 +651,9 @@ function renderDay(){
   let cur = -1;
   DAY.forEach((d,i) => { const [h,m] = d[0].split(":").map(Number); if (now >= h*60+m) cur = i; });
   if (now >= END) cur = -1;
-  $("#day").innerHTML = DAY.map((d,i) => `<li class="${i===cur?"now":""}"${i===cur?' aria-current="time"':""}><time>${d[0]}${i===cur?' <em class="nowtag">지금</em>':""}</time><b>${d[1]}</b><span>${d[2]}</span></li>`).join("");
+  const hasMenu = LUNCH.items.length > 0 || !!LUNCH.img;
+  $("#day").innerHTML = DAY.map((d,i) => `<li class="${i===cur?"now":""}"${i===cur?' aria-current="time"':""}><time>${d[0]}${i===cur?' <em class="nowtag">지금</em>':""}</time><b>${d[1]}</b><span>${d[2]}</span>${d[3]==="lunch" && hasMenu ? '<button class="menu-btn" id="menuBtn">메뉴 보기</button>' : ""}</li>`).join("");
+  const mb = $("#menuBtn"); if (mb) mb.onclick = openMenu;
 }
 setInterval(renderDay, 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) renderDay(); });
@@ -817,6 +851,16 @@ $("#cardShare").onclick = async () => {
   try { await navigator.share({files:[new File([cardBlob], "파주_스탬프_인증카드.jpg", {type:"image/jpeg"})], title:"파주출판단지 스탬프 투어"}); }
   catch(e){ if (e.name !== "AbortError") toast("공유하지 못했어요. 이미지를 길게 눌러 저장해주세요."); }
 };
+
+/* ===== 점심 메뉴 ===== */
+function openMenu(){
+  $("#mTitle").textContent = LUNCH.title;
+  $("#mPlace").textContent = LUNCH.place;
+  $("#mList").innerHTML = LUNCH.items.map(x => `<li>${x}</li>`).join("");
+  $("#mList").hidden = LUNCH.items.length === 0;
+  const im = $("#mImg"); im.hidden = !LUNCH.img; if (LUNCH.img) im.src = LUNCH.img;
+  $("#menuDlg").showModal();
+}
 
 /* ===== 탭 ===== */
 const TABS = ["day","course","stamp"];
