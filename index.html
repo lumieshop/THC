@@ -125,6 +125,8 @@ dialog.mini{position:fixed;inset:0;width:min(340px,calc(100% - 40px));height:fit
 .minibox li{padding:9px 0;border-bottom:1px solid var(--line);font-size:16px}
 .minibox img{display:block;width:100%;margin-top:12px;border-radius:8px}
 .minibox img[hidden],.minibox ul[hidden]{display:none}
+.locnote{margin-top:10px;padding:10px 12px;border-left:3px solid var(--red);background:#fff;font-size:14px;line-height:1.6;border-radius:0 6px 6px 0}
+.locnote b:first-child{display:block;color:var(--red);font-size:14px}
 .howto{margin-top:12px;padding:12px 14px;border-radius:8px;background:var(--paper)}
 .howto p{font-weight:700;font-size:15px}
 .howto ol{margin:6px 0 0 20px;font-size:15px;line-height:1.7}
@@ -373,7 +375,8 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 <div class="panel" id="p-stamp" role="tabpanel" aria-labelledby="t-stamp" hidden>
 <section aria-labelledby="h-stamp" id="stamp">
   <h2 id="h-stamp">인증샷 스탬프 투어</h2>
-  <p class="hint">각 장소에서 인증샷(간판, 전경 또는 활동 사진)을 찍어 올리면 스탬프가 찍혀요. 최소 1개는 꼭 받아주세요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
+  <p class="hint">각 장소에서 인증샷(간판, 전경 또는 활동 사진)을 찍어 올리면 스탬프가 찍혀요. 최소 1개는 꼭 받아주세요.</p>
+  <p class="locnote"><b>위치 기반 인증</b> 인증샷은 해당 장소 근처(반경 150m)에서 찍어야만 스탬프가 찍혀요. 처음 찍을 때 위치 권한을 묻는 창이 뜨면 꼭 <b>허용</b>을 눌러주세요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
   <div class="passport">
     <div class="who"><label for="who">이름</label><input id="who" autocomplete="name" placeholder="수강생 이름을 적어주세요" maxlength="12"></div>
     <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>최소 1개 필수, 5개부터 우수 활동,<br>9개 모두 모으면 완주</p></div>
@@ -422,6 +425,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
     <p class="mission" id="pMission"></p>
     <p class="hint">간판, 전경 또는 활동 사진이면 돼요. 출판단지 건물은 큰 간판 대신 입구 앞 세로 이름 기둥에 이름을 단 곳이 많아요.</p>
     <figure class="photo" id="pPhoto" hidden><img alt="내가 올린 인증샷"><figcaption></figcaption></figure>
+    <p class="hint">이 장소 근처(반경 150m)에서만 스탬프가 찍혀요. 위치 권한을 허용해 주세요.</p>
     <div class="actions"><button class="btn primary" id="pShot">인증샷 찍고 스탬프 받기</button></div>
     <input type="file" id="cam" accept="image/*" capture="environment" hidden>
   </div>
@@ -724,10 +728,10 @@ function dist(a, b){
 }
 function getLoc(){
   return new Promise(res => {
-    if (!navigator.geolocation) return res(null);
+    if (!navigator.geolocation) return res({err: 0});
     navigator.geolocation.getCurrentPosition(
       pos => res({lat:pos.coords.latitude, lng:pos.coords.longitude, acc:pos.coords.accuracy}),
-      () => res(null), {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
+      err => res({err: err.code}), {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
   });
 }
 function shrink(file, max=640){
@@ -763,15 +767,19 @@ $("#cam").onchange = async e => {
   try { [img, loc] = await Promise.all([shrink(file), locPromise]); }
   catch(err){ $("#busy").classList.remove("show"); toast("사진을 읽지 못했어요. 다시 찍어주세요."); return; }
   $("#busy").classList.remove("show");
-  let verified = false;
-  if (loc && loc.test) verified = true;
-  else if (loc){
-    const d = dist(loc, p), slack = Math.min(loc.acc || 0, CONFIG.slack);
-    if (d - slack > CONFIG.radius){
-      toast(`${p.name}에서 약 ${Math.round(d)}m 떨어져 있어요. 장소 근처에서 다시 찍어주세요.`, 4500);
+  let verified = true;
+  if (!(loc && loc.test)){
+    if (!loc || loc.err !== undefined){
+      toast(loc && loc.err === 1
+        ? "위치 권한을 허용해야 스탬프를 받을 수 있어요. 휴대폰 설정에서 위치 권한을 허용한 뒤 다시 찍어주세요."
+        : "현재 위치를 확인하지 못했어요. 장소 근처에서 잠시 후 다시 찍어주세요.", 5500);
       return;
     }
-    verified = true;
+    const d = dist(loc, p), slack = Math.min(loc.acc || 0, CONFIG.slack);
+    if (d - slack > CONFIG.radius){
+      toast(`${p.name}에서 약 ${d >= 1000 ? (d/1000).toFixed(1) + 'km' : Math.round(d) + 'm'} 떨어져 있어요. 장소 근처(반경 ${CONFIG.radius}m)에서 다시 찍어주세요.`, 4500);
+      return;
+    }
   }
   const prev = state.stamps[p.n];
   state.stamps[p.n] = {t: Date.now(), v: verified, img};
@@ -780,7 +788,7 @@ $("#cam").onchange = async e => {
   renderAll(p.n);
   showTab("stamp");
   const c = count();
-  toast(verified ? `${p.name} 스탬프를 받았어요. 지금 ${c}개!` : `${p.name} 스탬프를 받았어요. 위치 권한이 없어 '위치 미확인'으로 표시돼요.`, 4000);
+  toast(`${p.name} 스탬프를 받았어요. 지금 ${c}개!`, 4000);
 };
 
 /* ===== 이름 / 초기화 ===== */
