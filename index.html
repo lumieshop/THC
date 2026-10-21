@@ -6,7 +6,7 @@
 <title>파주출판단지 탐방 코스 | K-뉴딜 아카데미 THC 대전</title>
 <meta name="description" content="10월 23일 기업탐방 자유시간 15:30–17:00, 파주출판단지 순환 코스와 인증샷 스탬프 투어">
 <meta property="og:title" content="파주출판단지 탐방 코스 · 스탬프 투어">
-<meta property="og:description" content="장소를 눌러 길찾기, 인증샷 올리고 스탬프 모으기. 5개부터 우수 활동 상품!">
+<meta property="og:description" content="장소를 눌러 길찾기, 인증샷 올리고 스탬프 모으기. 최소 1개 필수, 5개부터 우수 활동 상품!">
 <meta property="og:image" content="https://lumieshop.github.io/THC/course.png">
 <meta name="theme-color" content="#EEF0E8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,11 +47,6 @@ section{padding:30px 0 6px}
 .tabs button[aria-selected="true"]::after{content:"";position:absolute;left:12%;right:12%;bottom:-2px;height:4px;background:var(--red);border-radius:2px 2px 0 0}
 .tcount{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--block);color:var(--ink);font:700 13px var(--sans);vertical-align:2px;margin-left:2px}
 .tcount.on{background:var(--red);color:#fff}
-.goals{list-style:none;counter-reset:g;margin-top:12px}
-.goals li{counter-increment:g;position:relative;padding:12px 0 12px 40px;border-bottom:1px solid var(--line)}
-.goals li::before{content:counter(g);position:absolute;left:0;top:13px;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font:700 14px var(--sans)}
-.goals b{display:block;font:700 19px/1.3 var(--serif)}
-.goals span{font-size:15px;color:var(--ink-soft)}
 .endpad{height:48px}
 h2{font:700 27px/1.25 var(--serif)}
 .hint{font-size:14px;color:var(--ink-soft);margin-top:4px}
@@ -90,8 +85,8 @@ h2{font:700 27px/1.25 var(--serif)}
 .bar{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-top:10px}
 .bar i{height:6px;border-radius:3px;background:var(--block)}
 .bar i.on{background:var(--red)}
-.bar i:nth-child(5){position:relative}
-.bar i:nth-child(5)::after{content:"";position:absolute;right:-3px;top:-5px;height:16px;border-right:2px solid var(--brass)}
+.bar i:nth-child(1),.bar i:nth-child(5){position:relative}
+.bar i:nth-child(1)::after,.bar i:nth-child(5)::after{content:"";position:absolute;right:-3px;top:-5px;height:16px;border-right:2px solid var(--brass)}
 .seals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
 .seal{aspect-ratio:1;border:2px dashed var(--line);border-radius:50%;display:grid;place-items:center;text-align:center;position:relative;padding:8px;color:var(--ink-soft);font-size:13px;line-height:1.25}
 .seal .sn{display:block;font:700 18px var(--sans)}
@@ -117,7 +112,9 @@ h2{font:700 27px/1.25 var(--serif)}
 .day{list-style:none;margin-top:12px;border-left:2.5px solid var(--ink);padding-left:16px}
 .day li{position:relative;padding:8px 0}
 .day li::before{content:"";position:absolute;left:-23px;top:15px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ink)}
-.day li.now::before{background:var(--red);border-color:var(--red)}
+.day li.now::before{background:var(--red);border-color:var(--red);box-shadow:0 0 0 5px rgba(200,16,46,.18)}
+.day li.now b{color:var(--red)}
+.nowtag{font-style:normal;font:700 12px var(--sans);color:#fff;background:var(--red);border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:1px}
 .day time{font-weight:700;color:var(--brass);font-size:14px}
 .day b{display:block;font:700 18px/1.3 var(--serif)}
 .day span{font-size:14px;color:var(--ink-soft)}
@@ -181,23 +178,21 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 
 <nav class="tabs" role="tablist" aria-label="화면 나누기">
   <div class="wrap tabrow">
-    <button role="tab" id="t-course" aria-controls="p-course" aria-selected="true">코스</button>
+    <button role="tab" id="t-day" aria-controls="p-day" aria-selected="true">오늘 일정</button>
+    <button role="tab" id="t-course" aria-controls="p-course" aria-selected="false">탐방 코스</button>
     <button role="tab" id="t-stamp" aria-controls="p-stamp" aria-selected="false">스탬프 <span class="tcount" id="tcount">0</span></button>
-    <button role="tab" id="t-day" aria-controls="p-day" aria-selected="false">오늘 일정</button>
   </div>
 </nav>
 
 <div class="wrap">
-<div class="panel" id="p-course" role="tabpanel" aria-labelledby="t-course">
-<section aria-labelledby="h-goal">
-  <h2 id="h-goal">탐방 목표</h2>
-  <ol class="goals">
-    <li><b>출판사의 얼굴 읽기</b><span>건물과 공간이 그 출판사의 책, 분야, 분위기를 어떻게 드러내는지 살펴봐요.</span></li>
-    <li><b>책이 만들어지는 생태계 보기</b><span>출판사, 인쇄소, 물류, 서점이 한 동네에 모인 출판도시의 흐름을 걸으며 느껴봐요.</span></li>
-    <li><b>내 책의 자리 찾기</b><span>내가 만들고 싶은 책과 결이 맞는 출판사를 한 곳 골라 이유를 메모해 두세요.</span></li>
-  </ol>
+<div class="panel" id="p-day" role="tabpanel" aria-labelledby="t-day">
+<section aria-labelledby="h-day">
+  <h2 id="h-day">오늘 일정</h2>
+  <ol class="day" id="day"></ol>
 </section>
+</div>
 
+<div class="panel" id="p-course" role="tabpanel" aria-labelledby="t-course" hidden>
 <section aria-labelledby="h-map">
   <h2 id="h-map">코스 지도</h2>
   <p class="hint">번호를 누르면 주소, 길찾기, 장소 소개가 열려요.</p>
@@ -355,7 +350,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 </section>
 
 <section aria-labelledby="h-course">
-  <h2 id="h-course">도는 순서</h2>
+  <h2 id="h-course">탐방 순서</h2>
   <p class="hint">시간은 권장 기준이에요. 순서는 바꿔도 괜찮아요.</p>
   <ol class="course" id="course"></ol>
 </section>
@@ -364,13 +359,13 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 <div class="panel" id="p-stamp" role="tabpanel" aria-labelledby="t-stamp" hidden>
 <section aria-labelledby="h-stamp" id="stamp">
   <h2 id="h-stamp">인증샷 스탬프 투어</h2>
-  <p class="hint">각 장소에서 건물이 보이게(간판 또는 건물 전경) 인증샷을 찍어 올리면 스탬프가 찍혀요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
+  <p class="hint">각 장소에서 건물이 보이게(간판 또는 건물 전경) 인증샷을 찍어 올리면 스탬프가 찍혀요. 최소 1개는 꼭 받아주세요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
   <div class="passport">
     <div class="who"><label for="who">이름</label><input id="who" autocomplete="name" placeholder="수강생 이름을 적어주세요" maxlength="12"></div>
-    <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>5개부터 우수 활동,<br>9개 모두 모으면 완주</p></div>
+    <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>최소 1개 필수, 5개부터 우수 활동,<br>9개 모두 모으면 완주</p></div>
     <div class="bar" id="bar" aria-hidden="true"></div>
     <div class="seals" id="seals"></div>
-    <div class="goal" id="goal">장소에서 인증샷을 올리고 첫 스탬프를 받아보세요.</div>
+    <div class="goal" id="goal">인증샷 스탬프는 최소 1개 필수예요.</div>
     <div class="actions">
       <button class="btn ink" id="makeCard">인증 카드 만들기</button>
     </div>
@@ -380,12 +375,6 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 </section>
 </div>
 
-<div class="panel" id="p-day" role="tabpanel" aria-labelledby="t-day" hidden>
-<section aria-labelledby="h-day">
-  <h2 id="h-day">오늘 일정</h2>
-  <ol class="day" id="day"></ol>
-</section>
-</div>
 <div class="endpad"></div>
 </div>
 
@@ -563,8 +552,9 @@ const DAY = [
   ["12:00","점심식사","웅진씽크빅 구내식당, 점심 제공"],
   ["13:00","편집자 특강","웅진씽크빅 세미나실1, 편집3팀 정다이 팀장"],
   ["14:00","활판인쇄박물관","14:30 문선 책갈피 만들기, 박물관 투어"],
-  ["15:30","출판단지 자유시간","이 페이지의 탐방 코스와 스탬프 투어",true],
-  ["16:50","지혜의숲 앞 집합","17:00 퇴실 QR 후 대전으로 출발"]
+  ["15:30","출판단지 자유시간","이 페이지의 탐방 코스와 스탬프 투어"],
+  ["16:50","지혜의숲 앞 집합","자유시간 마무리, 버스 탑승 준비"],
+  ["17:00","대전으로 출발","17:00 퇴실 QR 후 버스로 이동, 20:00 도착 예정"]
 ];
 const TEST = new URLSearchParams(location.search).has("test"); // ?test 로 열면 위치 확인 생략
 
@@ -615,12 +605,24 @@ function renderPassport(fresh){
   const g = $("#goal");
   if (c >= 9){ g.className="goal ok"; g.innerHTML = "<b>9곳 완주!</b> 인증 카드를 단톡방에 올려주세요."; }
   else if (c >= CONFIG.goal){ g.className="goal ok"; g.innerHTML = `<b>우수 활동 달성!</b> 인증 카드를 단톡방에 올려주세요. 완주까지 ${9-c}곳 남았어요.`; }
-  else { g.className="goal"; g.textContent = c === 0 ? "장소에서 인증샷을 올리고 첫 스탬프를 받아보세요." : `우수 활동까지 ${CONFIG.goal-c}개 남았어요.`; }
+  else { g.className="goal"; g.textContent = c === 0 ? "인증샷 스탬프는 최소 1개 필수예요. 장소에서 첫 스탬프를 받아보세요." : `필수 스탬프 완료! 우수 활동까지 ${CONFIG.goal-c}개 남았어요.`; }
   $("#makeCard").disabled = c === 0;
 }
-function renderDay(){
-  $("#day").innerHTML = DAY.map(d => `<li class="${d[3]?"now":""}"><time>${d[0]}</time><b>${d[1]}</b><span>${d[2]}</span></li>`).join("");
+function nowMinutes(){
+  // 한국 시간 기준 현재 시각(분)
+  const p = new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Seoul",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const h = +p.find(x=>x.type==="hour").value % 24, m = +p.find(x=>x.type==="minute").value;
+  return h * 60 + m;
 }
+function renderDay(){
+  const now = nowMinutes(), END = 20 * 60;
+  let cur = -1;
+  DAY.forEach((d,i) => { const [h,m] = d[0].split(":").map(Number); if (now >= h*60+m) cur = i; });
+  if (now >= END) cur = -1;
+  $("#day").innerHTML = DAY.map((d,i) => `<li class="${i===cur?"now":""}"${i===cur?' aria-current="time"':""}><time>${d[0]}${i===cur?' <em class="nowtag">지금</em>':""}</time><b>${d[1]}</b><span>${d[2]}</span></li>`).join("");
+}
+setInterval(renderDay, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) renderDay(); });
 function renderAll(fresh){ renderCourse(); renderMapState(); renderPassport(fresh); }
 
 /* ===== 길찾기 링크 ===== */
@@ -817,9 +819,9 @@ $("#cardShare").onclick = async () => {
 };
 
 /* ===== 탭 ===== */
-const TABS = ["course","stamp","day"];
+const TABS = ["day","course","stamp"];
 function showTab(name, push){
-  if (!TABS.includes(name)) name = "course";
+  if (!TABS.includes(name)) name = TABS[0];
   TABS.forEach(n => {
     const on = n === name;
     document.getElementById("t-"+n).setAttribute("aria-selected", on);
