@@ -432,6 +432,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
   <h3 id="mTitle"></h3>
   <p class="mplace" id="mPlace"></p>
   <ul id="mList"></ul>
+  <p class="mplace" id="mNote" style="margin-top:8px;text-align:right"></p>
   <img id="mImg" alt="점심 메뉴" hidden>
   <button class="btn ink" data-close style="width:100%;margin-top:14px">닫기</button>
 </div></dialog>
@@ -577,7 +578,7 @@ const PLACES = [
  }
 ];
 /* 점심 메뉴: items에 메뉴를 적거나 img에 사진 파일 이름을 넣으면 '메뉴 보기' 버튼이 생겨요 */
-const LUNCH = { title: "오늘의 점심", place: "웅진씽크빅 구내식당", items: [], img: "" };
+const LUNCH = { title: "10월 23일(금) 점심", place: "웅진씽크빅 구내식당, 일반식", items: ["나주곰탕(뚝배기)","찰보리밥","동태전 & 깻잎전","순대볶음","아삭이고추 된장무침","깍두기"], note: "913kcal", img: "" };
 const DAY = [
   ["08:00","대전역 동광장 출발","08:00 QR 입실 후 버스로 이동"],
   ["11:00","웅진씽크빅 역사관","역사관 투어"],
@@ -858,6 +859,7 @@ function openMenu(){
   $("#mPlace").textContent = LUNCH.place;
   $("#mList").innerHTML = LUNCH.items.map(x => `<li>${x}</li>`).join("");
   $("#mList").hidden = LUNCH.items.length === 0;
+  $("#mNote").textContent = LUNCH.note || ""; $("#mNote").hidden = !LUNCH.note;
   const im = $("#mImg"); im.hidden = !LUNCH.img; if (LUNCH.img) im.src = LUNCH.img;
   $("#menuDlg").showModal();
 }
