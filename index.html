@@ -6,7 +6,7 @@
 <title>파주출판단지 탐방 | K-뉴딜 아카데미 THC 대전</title>
 <meta name="description" content="10월 23일 기업탐방 자유시간 15:30–17:00, 파주출판단지 순환 코스와 인증샷 스탬프 투어">
 <meta property="og:title" content="파주출판단지 탐방 · 스탬프 투어">
-<meta property="og:description" content="장소를 눌러 길찾기, 인증샷 올리고 스탬프 모으기. 최소 1개 필수, 5개부터 우수 활동 상품!">
+<meta property="og:description" content="장소를 눌러 길찾기, 인증샷 올리고 스탬프 모으기. 최소 1개 필수, 9곳 완주하면 우수 활동 상품!">
 <meta property="og:image" content="https://lumieshop.github.io/THC/course.png">
 <meta name="theme-color" content="#EEF0E8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,8 +85,8 @@ h2{font:700 27px/1.25 var(--serif)}
 .bar{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-top:10px}
 .bar i{height:6px;border-radius:3px;background:var(--block)}
 .bar i.on{background:var(--red)}
-.bar i:nth-child(1),.bar i:nth-child(5){position:relative}
-.bar i:nth-child(1)::after,.bar i:nth-child(5)::after{content:"";position:absolute;right:-3px;top:-5px;height:16px;border-right:2px solid var(--brass)}
+.bar i:nth-child(1){position:relative}
+.bar i:nth-child(1)::after{content:"";position:absolute;right:-3px;top:-5px;height:16px;border-right:2px solid var(--brass)}
 .seals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
 .seal{aspect-ratio:1;border:2px dashed var(--line);border-radius:50%;display:grid;place-items:center;text-align:center;position:relative;padding:8px;color:var(--ink-soft);font-size:13px;line-height:1.25}
 .seal .sn{display:block;font:700 18px var(--sans)}
@@ -379,7 +379,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
   <p class="locnote"><b>위치 기반 인증</b> 인증샷은 해당 장소 근처(반경 150m)에서 찍어야만 스탬프가 찍혀요. 처음 찍을 때 위치 권한을 묻는 창이 뜨면 꼭 <b>허용</b>을 눌러주세요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
   <div class="passport">
     <div class="who"><label for="who">이름</label><input id="who" autocomplete="name" placeholder="수강생 이름을 적어주세요" maxlength="12"></div>
-    <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>최소 1개 필수, 5개부터 우수 활동,<br>9개 모두 모으면 완주</p></div>
+    <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>최소 1개 필수,<br>9곳 완주하면 우수 활동 상품</p></div>
     <div class="bar" id="bar" aria-hidden="true"></div>
     <div class="seals" id="seals"></div>
     <div class="goal" id="goal">인증샷 스탬프는 최소 1개 필수예요.</div>
@@ -458,7 +458,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 const CONFIG = {
   radius: 150,          // 장소 반경(m) 안에서만 스탬프 발급
   slack: 100,           // GPS 오차 보정 최대치(m)
-  goal: 5,              // 우수 활동 기준 스탬프 수
+  goal: 9,              // 우수 활동(완주) 기준 스탬프 수
   eventDate: "2026년 10월 23일",
   storeKey: "paju-stamp-2026-10-23"
 };
@@ -640,9 +640,8 @@ function renderPassport(fresh){
       : `<button class="seal" data-n="${p.n}" aria-label="${p.name} 스탬프 받으러 가기"><span><span class="sn">${p.n}</span>${p.name}</span></button>`;
   }).join("");
   const g = $("#goal");
-  if (c >= 9){ g.className="goal ok"; g.innerHTML = "<b>9곳 완주!</b> 인증 카드를 단톡방에 올려주세요."; }
-  else if (c >= CONFIG.goal){ g.className="goal ok"; g.innerHTML = `<b>우수 활동 달성!</b> 인증 카드를 단톡방에 올려주세요. 완주까지 ${9-c}곳 남았어요.`; }
-  else { g.className="goal"; g.textContent = c === 0 ? "인증샷 스탬프는 최소 1개 필수예요. 장소에서 첫 스탬프를 받아보세요." : `필수 스탬프 완료! 우수 활동까지 ${CONFIG.goal-c}개 남았어요.`; }
+  if (c >= CONFIG.goal){ g.className="goal ok"; g.innerHTML = "<b>9곳 완주, 우수 활동 달성!</b> 인증 카드를 단톡방에 올려주세요."; }
+  else { g.className="goal"; g.textContent = c === 0 ? "인증샷 스탬프는 최소 1개 필수예요. 장소에서 첫 스탬프를 받아보세요." : `필수 스탬프 완료! 9곳을 모두 모으면 우수 활동 상품을 드려요. 완주까지 ${CONFIG.goal-c}곳 남았어요.`; }
   $("#makeCard").disabled = c === 0;
 }
 function nowMinutes(){
@@ -847,7 +846,7 @@ $("#makeCard").onclick = async () => {
     if (s && !s.v){ x.fillStyle = BR; x.font = '600 18px "IBM Plex Sans KR", sans-serif'; x.textAlign = "right"; x.fillText("위치 미확인", gx + gw, gy + gh + 38); x.textAlign = "left"; }
   }
   x.fillStyle = c9 >= CONFIG.goal ? RED : INK; x.font = '700 34px "Gowun Batang", serif';
-  x.fillText(c9 >= 9 ? "9곳 완주" : c9 >= CONFIG.goal ? "우수 활동 달성" : `우수 활동까지 ${CONFIG.goal - c9}개`, 60, H - 40);
+  x.fillText(c9 >= CONFIG.goal ? "9곳 완주 · 우수 활동 달성" : `필수 스탬프 완료 · 완주까지 ${CONFIG.goal - c9}곳`, 60, H - 40);
   x.fillStyle = "rgba(29,43,83,.6)"; x.font = '400 20px "IBM Plex Sans KR", sans-serif'; x.textAlign = "right";
   const now = new Date(); x.fillText(`만든 시각 ${fmt(now)}`, W - 60, H - 44); x.textAlign = "left";
   const url = c.toDataURL("image/jpeg", .86);

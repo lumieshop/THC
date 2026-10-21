@@ -33,5 +33,5 @@ https://lumieshop.github.io/THC/
 ## 고칠 수 있는 설정 (`index.html` 안 `CONFIG`)
 - `radius` : 스탬프 인정 반경(m), 기본 150
 - `slack` : GPS 오차 보정 최대치(m), 기본 100
-- `goal` : 우수 활동 기준 스탬프 수, 기본 5
+- `goal` : 우수 활동(완주) 기준 스탬프 수, 기본 9 (최소 1개는 필수)
 - 장소 설명·미션·시간은 `const PLACES = [...]` 부분에서 바꿀 수 있어요.
