@@ -314,10 +314,10 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 <text x="513.6" y="563.4" text-anchor="middle" font-size="19" font-weight="700" fill="#fff" font-family="IBM Plex Sans KR, sans-serif">7</text>
 <circle cx="513.6" cy="556.4" r="34" fill="transparent"/>
 </g>
-<g class="stop" data-n="6" tabindex="0" role="button" aria-label="6번 열린책들 정보 보기">
-<rect x="485.8" y="104.9" width="104.0" height="52" rx="6" fill="#fff" stroke="#1D2B53" stroke-width="1.5"/>
-<text x="497.8" y="127.9" font-size="19" font-weight="700" fill="#1D2B53" font-family="Gowun Batang, serif">열린책들</text>
-<text x="497.8" y="147.9" font-size="14" font-weight="600" fill="#A8841A" font-family="IBM Plex Sans KR, sans-serif">16:05</text>
+<g class="stop" data-n="6" tabindex="0" role="button" aria-label="6번 열린책들(미메시스) 정보 보기">
+<rect x="212.8" y="104.9" width="221.0" height="52" rx="6" fill="#fff" stroke="#1D2B53" stroke-width="1.5"/>
+<text x="224.8" y="127.9" font-size="19" font-weight="700" fill="#1D2B53" font-family="Gowun Batang, serif">열린책들(미메시스)</text>
+<text x="224.8" y="147.9" font-size="14" font-weight="600" fill="#A8841A" font-family="IBM Plex Sans KR, sans-serif">16:05</text>
 <circle cx="459.8" cy="130.9" r="22" fill="#fff"/><circle class="dot" cx="459.8" cy="130.9" r="18" fill="#C8102E"/>
 <text x="459.8" y="137.9" text-anchor="middle" font-size="19" font-weight="700" fill="#fff" font-family="IBM Plex Sans KR, sans-serif">6</text>
 <circle cx="459.8" cy="130.9" r="34" fill="transparent"/>
@@ -531,7 +531,7 @@ const PLACES = [
  {
   "n": 6,
   "id": "openbooks",
-  "name": "열린책들",
+  "name": "열린책들(미메시스)",
   "time": "16:05",
   "note": "세계문학 출판사 · 반환점",
   "lat": 37.7168168,
@@ -835,7 +835,13 @@ $("#makeCard").onclick = async () => {
       x.strokeStyle = RED; x.lineWidth = 5; x.stroke(); x.lineWidth = 2; x.beginPath(); x.arc(0, 0, 45, 0, Math.PI * 2); x.stroke();
       x.fillStyle = RED; x.textAlign = "center"; x.font = '700 20px "Gowun Batang", serif';
       const nm = p.name.replace(" 본사","");
-      x.fillText(nm, 0, 2); x.font = '600 15px "IBM Plex Sans KR", sans-serif'; x.fillText(fmt(s.t), 0, 24);
+      const lines = nm.includes("(") ? [nm.slice(0, nm.indexOf("(")), nm.slice(nm.indexOf("("))] : [nm];
+      if (lines.length > 1){
+        x.font = '700 17px "Gowun Batang", serif'; x.fillText(lines[0], 0, -8); x.font = '700 14px "Gowun Batang", serif'; x.fillText(lines[1], 0, 10);
+        x.font = '600 13px "IBM Plex Sans KR", sans-serif'; x.fillText(fmt(s.t), 0, 30);
+      } else {
+        x.fillText(nm, 0, 2); x.font = '600 15px "IBM Plex Sans KR", sans-serif'; x.fillText(fmt(s.t), 0, 24);
+      }
       x.restore(); x.textAlign = "left";
     } else {
       x.save(); x.setLineDash([10, 10]); x.strokeStyle = "rgba(29,43,83,.3)"; x.lineWidth = 3;
