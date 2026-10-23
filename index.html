@@ -169,8 +169,20 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:8px;font-size:15px;max-width:calc(100% - 32px);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
-.busy{position:fixed;inset:0;background:rgba(238,240,232,.85);display:none;place-items:center;z-index:40;font:700 18px var(--serif)}
-.busy.show{display:grid}
+dialog.busy{background:rgba(238,240,232,.98);place-items:center;font:700 18px var(--serif);color:var(--ink)}
+dialog.busy::backdrop{background:transparent}
+dialog.busy[open]{display:grid}
+.busybox{text-align:center;padding:0 28px}
+.busybox small{display:block;font:400 14px var(--sans);color:var(--ink-soft);margin:6px 0 14px}
+.busybox .btn{min-width:120px;flex:none}
+#pShot.ready{background:var(--ink)}
+.lochelp{margin-top:10px;padding:10px 12px;border-radius:6px;background:#fbecee;color:var(--ink);font-size:14px;line-height:1.6}
+.lochelp b{color:var(--red)}
+.pname{display:flex;gap:8px;align-items:center;margin-top:10px}
+.pname input{flex:1;min-width:0;border:0;border-bottom:2px solid var(--ink);padding:6px 2px;font:700 17px var(--serif);background:transparent}
+.pname input:focus{outline:none;border-color:var(--brass)}
+.loccheck{margin-top:10px}
+.locresult{margin-top:8px;font-size:14px;line-height:1.6}
 
 .card-modal .sheet{text-align:center}
 .card-modal img{width:100%;border-radius:8px;margin-top:6px;border:1px solid var(--line)}
@@ -377,6 +389,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
   <h2 id="h-stamp">인증샷 스탬프 투어</h2>
   <p class="hint">각 장소에서 인증샷(간판, 전경 또는 활동 사진)을 찍어 올리면 스탬프가 찍혀요. 최소 1개는 꼭 받아주세요.</p>
   <p class="locnote"><b>위치 기반 인증</b> 인증샷은 해당 장소 근처(반경 150m)에서 찍어야만 스탬프가 찍혀요. 처음 찍을 때 위치 권한을 묻는 창이 뜨면 꼭 <b>허용</b>을 눌러주세요. 사진과 스탬프는 내 휴대폰에만 저장돼요.</p>
+  <div class="loccheck"><button class="btn line" id="locCheck" style="width:100%">내 위치 미리 확인하기</button><div class="locresult" id="locResult"></div></div>
   <div class="passport">
     <div class="who"><label for="who">이름</label><input id="who" autocomplete="name" placeholder="수강생 이름을 적어주세요" maxlength="12"></div>
     <div class="progress"><strong id="cnt">0<span> / 9</span></strong><p>최소 1개 필수,<br>9곳 완주하면 우수 활동 상품</p></div>
@@ -426,7 +439,9 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
     <p class="hint">간판, 전경 또는 활동 사진이면 돼요. 출판단지 건물은 큰 간판 대신 입구 앞 세로 이름 기둥에 이름을 단 곳이 많아요.</p>
     <figure class="photo" id="pPhoto" hidden><img alt="내가 올린 인증샷"><figcaption></figcaption></figure>
     <p class="hint">이 장소 근처(반경 150m)에서만 스탬프가 찍혀요. 위치 권한을 허용해 주세요.</p>
+    <div class="pname" id="pNameRow" hidden><label for="pName" style="font-weight:600;font-size:15px">이름</label><input id="pName" placeholder="인증 카드에 들어갈 이름" maxlength="12" autocomplete="name"></div>
     <div class="actions"><button class="btn primary" id="pShot">인증샷 찍고 스탬프 받기</button></div>
+    <div class="lochelp" id="pHelp" hidden></div>
     <input type="file" id="cam" accept="image/*" capture="environment" hidden>
   </div>
 </div></div></dialog>
@@ -451,7 +466,7 @@ dialog::backdrop{background:rgba(29,43,83,.45)}
 </div></div></dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="busy" id="busy">위치 확인 중…</div>
+<dialog class="busy" id="busy"><div class="busybox"><p>내 위치 확인 중…</p><small>위치 권한을 묻는 창이 뜨면 '허용'을 눌러주세요.</small><button class="btn line" id="busyCancel">취소</button></div></dialog>
 
 <script>
 /* ===== 설정 ===== */
@@ -694,8 +709,10 @@ function openPlace(n){
   $("#pMission").textContent = p.mission;
   navLinks(p);
   const s = state.stamps[p.n], fig = $("#pPhoto");
-  if (s){ fig.hidden = false; fig.querySelector("img").src = s.img; fig.querySelector("figcaption").textContent = `${fmt(s.t)} 스탬프 받음${s.v?"":" (위치 미확인)"}`; $("#pShot").textContent = "인증샷 다시 찍기"; }
-  else { fig.hidden = true; $("#pShot").textContent = "인증샷 찍고 스탬프 받기"; }
+  if (s){ fig.hidden = false; fig.querySelector("img").src = s.img; fig.querySelector("figcaption").textContent = `${fmt(s.t)} 스탬프 받음`; }
+  else { fig.hidden = true; }
+  resetShotBtn(p);
+  if (shotReady(p) && !TEST){ $("#pShot").classList.add("ready"); $("#pShot").textContent = "위치 확인 완료! 눌러서 사진 찍기"; }
   $("#placeDlg").showModal();
 }
 document.addEventListener("click", e => {
@@ -707,7 +724,7 @@ document.addEventListener("keydown", e => {
   const t = e.target.closest && e.target.closest(".stop");
   if (t && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openPlace(t.dataset.n); }
 });
-document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
+document.querySelectorAll("dialog:not(.busy)").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
 $("#pAddr").onclick = () => {
   const n = $("#pNavs"); n.classList.remove("flash"); void n.offsetWidth; n.classList.add("flash");
   n.scrollIntoView({block:"nearest", behavior:"smooth"});
@@ -725,14 +742,42 @@ function dist(a, b){
   const h = Math.sin(dLat/2)**2 + Math.cos(toR(a.lat))*Math.cos(toR(b.lat))*Math.sin(dLng/2)**2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
-function getLoc(){
+let cancelLoc = null;
+function getLoc(ms = 15000){
   return new Promise(res => {
     if (!navigator.geolocation) return res({err: 0});
-    navigator.geolocation.getCurrentPosition(
-      pos => res({lat:pos.coords.latitude, lng:pos.coords.longitude, acc:pos.coords.accuracy}),
-      err => res({err: err.code}), {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
+    let done = false;
+    const fin = v => { if (done) return; done = true; clearTimeout(timer); cancelLoc = null; res(v); };
+    const timer = setTimeout(() => fin({err: 3}), ms);   // 권한 창이 안 떠도 멈추지 않게
+    cancelLoc = () => fin({cancel: true});
+    try {
+      navigator.geolocation.getCurrentPosition(
+        pos => fin({lat:pos.coords.latitude, lng:pos.coords.longitude, acc:pos.coords.accuracy}),
+        err => fin({err: err.code}), {enableHighAccuracy:true, timeout:ms - 1000, maximumAge:30000});
+    } catch(e){ fin({err: 0}); }
   });
 }
+async function getLocWithBusy(){
+  const bd = $("#busy"); try { bd.showModal(); } catch(e){ bd.setAttribute("open",""); }
+  const loc = await getLoc();
+  bd.close();
+  return loc;
+}
+$("#busyCancel").onclick = () => { if (cancelLoc) cancelLoc(); };
+$("#busy").addEventListener("cancel", e => { e.preventDefault(); if (cancelLoc) cancelLoc(); });
+const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const IN_KAKAO = /KAKAOTALK/i.test(navigator.userAgent);
+function locErrorHtml(loc){
+  if (loc.err === 1){
+    const how = IS_IOS
+      ? (IN_KAKAO ? "아이폰 <b>설정 → 카카오톡 → 위치</b>를 '앱을 사용하는 동안'으로 바꿔주세요." : "아이폰 <b>설정 → 개인정보 보호 및 보안 → 위치 서비스 → Safari 웹 사이트</b>를 '앱을 사용하는 동안'으로 바꿔주세요.")
+      : (IN_KAKAO ? "휴대폰 <b>설정 → 애플리케이션 → 카카오톡 → 권한 → 위치</b>를 허용해주세요." : "주소창 왼쪽 자물쇠(또는 설정) 아이콘에서 <b>위치 권한</b>을 허용해주세요.");
+    return `<b>위치 권한이 꺼져 있어요.</b><br>${how}<br>바꾼 뒤 이 페이지를 새로고침하고 다시 눌러주세요.`;
+  }
+  return `<b>위치를 확인하지 못했어요.</b><br>휴대폰의 <b>위치 서비스(GPS)</b>가 켜져 있는지 확인하고, 건물 밖에서 다시 눌러주세요.` +
+    (IN_KAKAO ? "<br>계속 안 되면 카카오톡 화면의 메뉴에서 <b>다른 브라우저로 열기</b>를 눌러 Safari·크롬에서 이용해주세요." : "");
+}
+function fmtDist(d){ return d >= 1000 ? (d/1000).toFixed(1) + "km" : Math.round(d) + "m"; }
 function shrink(file, max=640){
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), img = new Image();
@@ -747,47 +792,65 @@ function shrink(file, max=640){
     img.src = url;
   });
 }
-let locPromise = null, shotFor = null;
-$("#pShot").onclick = () => {
+let shotFor = null, shotOk = null;   // shotOk: {n, t} 위치 확인을 통과한 장소
+function resetShotBtn(p){
+  const b = $("#pShot"); b.classList.remove("ready");
+  b.textContent = state.stamps[p.n] ? "인증샷 다시 찍기" : "인증샷 찍고 스탬프 받기";
+  $("#pHelp").hidden = true;
+  $("#pNameRow").hidden = !!state.name;
+}
+function shotReady(p){ return TEST || (shotOk && shotOk.n === p.n && Date.now() - shotOk.t < 5 * 60 * 1000); }
+$("#pShot").onclick = async () => {
+  const p = current;
   if (!state.name){
-    const nm = prompt("인증 카드에 들어갈 이름을 적어주세요.");
-    if (!nm || !nm.trim()) return;
-    state.name = nm.trim().slice(0,12); save(); $("#who").value = state.name;
+    const nm = $("#pName").value.trim();
+    if (!nm){ $("#pNameRow").hidden = false; $("#pName").focus(); toast("인증 카드에 들어갈 이름을 먼저 적어주세요."); return; }
+    state.name = nm.slice(0,12); save(); $("#who").value = state.name; $("#pNameRow").hidden = true;
   }
-  shotFor = current;
-  locPromise = TEST ? Promise.resolve({test:true}) : getLoc();
-  $("#cam").value = ""; $("#cam").click();
+  shotFor = p;
+  if (shotReady(p)){ $("#cam").value = ""; $("#cam").click(); return; }   // 위치 확인 끝 → 바로 카메라
+  $("#pHelp").hidden = true;
+  const loc = await getLocWithBusy();
+  if (loc.cancel) return;
+  if (loc.err !== undefined){ $("#pHelp").innerHTML = locErrorHtml(loc); $("#pHelp").hidden = false; return; }
+  const d = dist(loc, p), slack = Math.min(loc.acc || 0, CONFIG.slack);
+  if (d - slack > CONFIG.radius){
+    $("#pHelp").innerHTML = `<b>${p.name}에서 약 ${fmtDist(d)} 떨어져 있어요.</b><br>장소 근처(반경 ${CONFIG.radius}m)로 가서 다시 눌러주세요.`;
+    $("#pHelp").hidden = false; return;
+  }
+  shotOk = {n: p.n, t: Date.now()};
+  const b = $("#pShot"); b.classList.add("ready"); b.textContent = "위치 확인 완료! 눌러서 사진 찍기";
+  toast("위치가 확인됐어요. 버튼을 한 번 더 눌러 사진을 찍어주세요.", 3500);
 };
 $("#cam").onchange = async e => {
   const file = e.target.files[0]; const p = shotFor;
   if (!file || !p) return;
-  $("#busy").classList.add("show");
-  let img, loc;
-  try { [img, loc] = await Promise.all([shrink(file), locPromise]); }
-  catch(err){ $("#busy").classList.remove("show"); toast("사진을 읽지 못했어요. 다시 찍어주세요."); return; }
-  $("#busy").classList.remove("show");
-  let verified = true;
-  if (!(loc && loc.test)){
-    if (!loc || loc.err !== undefined){
-      toast(loc && loc.err === 1
-        ? "위치 권한을 허용해야 스탬프를 받을 수 있어요. 휴대폰 설정에서 위치 권한을 허용한 뒤 다시 찍어주세요."
-        : "현재 위치를 확인하지 못했어요. 장소 근처에서 잠시 후 다시 찍어주세요.", 5500);
-      return;
-    }
-    const d = dist(loc, p), slack = Math.min(loc.acc || 0, CONFIG.slack);
-    if (d - slack > CONFIG.radius){
-      toast(`${p.name}에서 약 ${d >= 1000 ? (d/1000).toFixed(1) + 'km' : Math.round(d) + 'm'} 떨어져 있어요. 장소 근처(반경 ${CONFIG.radius}m)에서 다시 찍어주세요.`, 4500);
-      return;
-    }
-  }
+  if (!shotReady(p)){ toast("위치 확인이 만료됐어요. 버튼을 다시 눌러 위치부터 확인해주세요."); resetShotBtn(p); return; }
+  let img;
+  try { img = await shrink(file); }
+  catch(err){ toast("사진을 읽지 못했어요. 다시 찍어주세요."); return; }
+  const verified = true;
   const prev = state.stamps[p.n];
   state.stamps[p.n] = {t: Date.now(), v: verified, img};
   if (!save()){ if (prev) state.stamps[p.n] = prev; else delete state.stamps[p.n]; return; }
+  shotOk = null;
   $("#placeDlg").close();
   renderAll(p.n);
   showTab("stamp");
   const c = count();
   toast(`${p.name} 스탬프를 받았어요. 지금 ${c}개!`, 4000);
+};
+
+/* ===== 내 위치 미리 확인 ===== */
+$("#locCheck").onclick = async () => {
+  const r = $("#locResult"); r.innerHTML = "";
+  const loc = await getLocWithBusy();
+  if (loc.cancel) return;
+  if (loc.err !== undefined){ r.innerHTML = `<div class="lochelp">${locErrorHtml(loc)}</div>`; return; }
+  let best = null;
+  PLACES.forEach(p => { const d = dist(loc, p); if (!best || d < best.d) best = {p, d}; });
+  const near = best.d - Math.min(loc.acc || 0, CONFIG.slack) <= CONFIG.radius;
+  r.innerHTML = `<b style="color:var(--red)">위치 확인 OK</b> 스탬프를 받을 준비가 됐어요.<br>가장 가까운 장소: ${best.p.name} (약 ${fmtDist(best.d)})${near ? " · 지금 바로 스탬프를 받을 수 있어요!" : ""}`;
 };
 
 /* ===== 이름 / 초기화 ===== */
