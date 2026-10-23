@@ -47,6 +47,9 @@ section{padding:30px 0 6px}
 .tabs button[aria-selected="true"]::after{content:"";position:absolute;left:12%;right:12%;bottom:-2px;height:4px;background:var(--red);border-radius:2px 2px 0 0}
 .tcount{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--block);color:var(--ink);font:700 13px var(--sans);vertical-align:2px;margin-left:2px}
 .tcount.on{background:var(--red);color:#fff}
+.kakaobar{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;padding:12px 18px;font-size:14px;line-height:1.5}
+.kakaobar p{max-width:560px;margin:0 auto 8px}
+.kakaobar .btn{display:flex;max-width:560px;margin:0 auto;min-height:44px}
 .endpad{height:48px}
 h2{font:700 27px/1.25 var(--serif)}
 .hint{font-size:14px;color:var(--ink-soft);margin-top:4px}
@@ -192,6 +195,10 @@ dialog.busy[open]{display:grid}
 </style>
 </head>
 <body>
+<div class="kakaobar" id="kakaoBar" hidden>
+  <p><b>카카오톡 안에서는 위치 확인이 되지 않아요.</b> 스탬프를 받으려면 기본 브라우저(Safari·크롬)에서 열어주세요.</p>
+  <a class="btn primary" id="openExt" href="#">Safari·크롬으로 열기</a>
+</div>
 <div class="wrap">
 <header>
   <p class="kicker">K-뉴딜 아카데미 THC 대전 기업탐방, 10월 23일(금)</p>
@@ -609,6 +616,15 @@ const DAY = [
   ["17:00","대전으로 출발","17:00 퇴실 QR 후 버스로 이동, 20:00 도착 예정"]
 ];
 const TEST = new URLSearchParams(location.search).has("test"); // ?test 로 열면 위치 확인 생략
+/* 카카오톡 인앱 브라우저는 위치 확인이 안 되므로 기본 브라우저로 넘기기 */
+const KAKAO_EXT = "kakaotalk://web/openExternal?url=" + encodeURIComponent(location.href);
+if (/KAKAOTALK/i.test(navigator.userAgent)){
+  document.getElementById("kakaoBar").hidden = false;
+  document.getElementById("openExt").href = KAKAO_EXT;
+  let tried = false;
+  try { tried = sessionStorage.getItem("extTried") === "1"; sessionStorage.setItem("extTried", "1"); } catch(e){}
+  if (!tried) location.href = KAKAO_EXT;
+}
 
 /* ===== 상태 ===== */
 const $ = s => document.querySelector(s);
@@ -758,6 +774,7 @@ function getLoc(ms = 15000){
   });
 }
 async function getLocWithBusy(){
+  if (IN_KAKAO && !TEST) return {err: 2};
   const bd = $("#busy"); try { bd.showModal(); } catch(e){ bd.setAttribute("open",""); }
   const loc = await getLoc();
   bd.close();
@@ -774,8 +791,8 @@ function locErrorHtml(loc){
       : (IN_KAKAO ? "휴대폰 <b>설정 → 애플리케이션 → 카카오톡 → 권한 → 위치</b>를 허용해주세요." : "주소창 왼쪽 자물쇠(또는 설정) 아이콘에서 <b>위치 권한</b>을 허용해주세요.");
     return `<b>위치 권한이 꺼져 있어요.</b><br>${how}<br>바꾼 뒤 이 페이지를 새로고침하고 다시 눌러주세요.`;
   }
-  return `<b>위치를 확인하지 못했어요.</b><br>휴대폰의 <b>위치 서비스(GPS)</b>가 켜져 있는지 확인하고, 건물 밖에서 다시 눌러주세요.` +
-    (IN_KAKAO ? "<br>계속 안 되면 카카오톡 화면의 메뉴에서 <b>다른 브라우저로 열기</b>를 눌러 Safari·크롬에서 이용해주세요." : "");
+  if (IN_KAKAO) return `<b>카카오톡 안에서는 위치 확인이 되지 않아요.</b><br><a href="${KAKAO_EXT}"><b>Safari·크롬으로 열기</b></a>를 눌러 기본 브라우저에서 다시 시도해주세요.`;
+  return `<b>위치를 확인하지 못했어요.</b><br>휴대폰의 <b>위치 서비스(GPS)</b>가 켜져 있는지 확인하고, 건물 밖에서 다시 눌러주세요.`;
 }
 function fmtDist(d){ return d >= 1000 ? (d/1000).toFixed(1) + "km" : Math.round(d) + "m"; }
 function shrink(file, max=640){
